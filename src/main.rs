@@ -1,28 +1,25 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{App, HttpServer};
+use dotenv::dotenv;
+use std::env;
 
-#[get("/")]
-async fn index() -> impl Responder {
-    HttpResponse::Ok().body("Hello, world!")
-}
+mod models;
+mod controllers;
+mod routes;
+mod db;
 
-#[post("/api/resource")]
-async fn create_resource(_payload: web::Json<CreateResourceRequest>) -> impl Responder {
-    // Handle the POST request and return an appropriate response
-    HttpResponse::Ok().body("Resource created successfully")
-}
-
-#[derive(serde::Deserialize)]
-struct CreateResourceRequest {
-    // Define the request payload structure here
-    // Example: `name: String, age: u32, etc.`
-}
+use crate::controllers::user_controller;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
+
+    // Initialize database connection pool
+    db::init_pool(&database_url);
+
     HttpServer::new(|| {
-        App::new()
-            .service(index)
-            .service(create_resource)
+        App::new().configure(user_controller::get_users)
     })
     .bind("127.0.0.1:8000")?
     .run()
