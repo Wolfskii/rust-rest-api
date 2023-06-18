@@ -11,8 +11,8 @@ pub fn establish_connection() -> Pool {
     POOL.clone()
 }
 
-pub fn init_pool(database_url: &str) {
+pub fn init_pool(_database_url: &str) {
     let _ = dotenv::from_filename(".env");
     let _ = env::var("DATABASE_URL").unwrap_or_else(|_| panic!("DATABASE_URL not set"));
-    POOL.clone();
+    let _ = POOL.clone();
 }

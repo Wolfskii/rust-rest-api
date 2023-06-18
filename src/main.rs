@@ -7,7 +7,7 @@ mod controllers;
 mod routes;
 mod db;
 
-use crate::controllers::user_controller;
+use routes::user_routes::user_routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -19,9 +19,9 @@ async fn main() -> std::io::Result<()> {
     db::init_pool(&database_url);
 
     HttpServer::new(|| {
-        App::new().configure(user_controller::get_users)
+        App::new().configure(user_routes)
     })
-    .bind("127.0.0.1:8000")?
+    .bind(("127.0.0.1", 4000))?
     .run()
     .await
 }
